@@ -6,79 +6,63 @@
 /*   By: tkartasl <tkartasl@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 12:17:27 by tkartasl          #+#    #+#             */
-/*   Updated: 2024/04/23 15:46:18 by tkartasl         ###   ########.fr       */
+/*   Updated: 2024/04/24 12:46:45 by tkartasl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	check_arguments(char *argv[])
+static t_philo_data	*init_philo_struct(void)
 {
-	int	i;
-	int	j;
+	t_philo_data	*new;
 
-	j = 0;
-	i = 1;
-	while (argv[i] != 0)
-	{
-		while (argv[i][j] != 0)
-		{
-			if (argv[i][j] < 48 || argv[i][j] > 57)	
-				return (1);
-			j++;
-		}
-		j = 0;
-		i++;
-	}
-	return (0);
+	new = malloc(sizeof(t_philo_data));
+	if (new == 0)
+		return (0);
+	return (new);
 }
 
-int	assign_args(t_args *data, char *argv[])
+static int	init_philo_array(t_philo_data **philos, t_args *data)
 {
-	data->philo_count = ft_atoi(argv[1]);
-	if (data->philo_count < 0)
-		return (1);
-	data->time_die = ft_atoi(argv[2]);
-	if (data->time_die < 0)
-		return (1);
-	data->time_eat = ft_atoi(argv[3]);
-	if (data->time_eat < 0)
-		return (1);
-	data->time_sleep = ft_atoi(argv[4]);
-	if (data->time_sleep < 0)
-		return (1);
-	if (argv[5] != 0)	
-	{	
-		data->times_to_eat = ft_atoi(argv[5]);
-		if (data->times_to_eat < 0)
-			return (1);
+	int				i;
+	
+	i = 0;	
+	philos = malloc((data->philo_count + 1) * sizeof(t_philo_data *));
+	if (philos == 0)
+	{
+		write(2, "Malloc failure\n", 15);
+		return (-1);
 	}
+	data->philos = (*philos);	
+	while (i < data->philo_count)
+	{
+		philos[i] = init_philo_struct();
+		if (philos[i] == 0)
+			return (-1);
+		pthread_mutex_init(&philos[i]->fork, NULL);
+		i++;
+	}
+	philos[i] = 0;
 	return (0);
 }
 
 int	main(int argc, char *argv[])
 {
 	t_args			data;
+	t_philo_data	**philos;
 
-	if (argc != 5 && argc != 6)
-	{
-		printf("Wrong amount of arguments\n");
-		return (1);
-	}
+	philos = 0;
 	memset(&data.start, 0, sizeof(struct timeval));
 	memset(&data.current, 0, sizeof(struct timeval));
 	memset(&data, 0, sizeof(t_args));
-	gettimeofday(&data.start, 0);
-	if (check_arguments(argv) != 0)
-	{
-		printf("check arguments\n");
+	if (check_arguments(argc, argv, &data) != 0)
 		return (1);
-	}
-	if (assign_args(&data, argv) != 0)
-	{
-		printf("MAX / MIN INT WARNING\n");
+	if (init_philo_array(philos, &data) < 0)
 		return (1);
+	while (1)
+	{
+		
+		
 	}
-	init_philos();
 	return (0);
 }

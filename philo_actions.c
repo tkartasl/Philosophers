@@ -6,7 +6,7 @@
 /*   By: tkartasl <tkartasl@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 15:26:33 by tkartasl          #+#    #+#             */
-/*   Updated: 2024/04/23 16:23:44 by tkartasl         ###   ########.fr       */
+/*   Updated: 2024/04/24 09:55:23 by tkartasl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ void	sleeping(t_args data, t_philo_data philo)
 	}
 }
 
-void	eating(t_args data, t_philo_data **philo)
+void	eating(void	*arg)
 {
 	struct timeval	start;
 	struct timeval	current;
