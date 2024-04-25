@@ -6,20 +6,21 @@
 #    By: tkartasl <tkartasl@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/04/18 12:11:59 by tkartasl          #+#    #+#              #
-#    Updated: 2024/04/18 13:15:20 by tkartasl         ###   ########.fr        #
+#    Updated: 2024/04/25 16:00:02 by tkartasl         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = philo
 
 SRCS = philo.c \
-		philo_utils.c
+		philo_utils.c \
+		philo_actions.c
 
 OBJS = $(SRCS:.c=.o)
 
 MAKE = make
 
-FLAGS = -Wall -Wextra -Werror -pthread -I includes 
+FLAGS = -Wall -Wextra -Werror -pthread -I includes -fsanitize=thread
 
 CC = cc 
 

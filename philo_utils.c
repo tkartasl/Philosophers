@@ -6,11 +6,26 @@
 /*   By: tkartasl <tkartasl@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 13:11:20 by tkartasl          #+#    #+#             */
-/*   Updated: 2024/04/24 12:45:08 by tkartasl         ###   ########.fr       */
+/*   Updated: 2024/04/25 14:04:42 by tkartasl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+void	ft_free_pointer_array(t_philo_data **arr)
+{
+	int	n;
+
+	n = 0;
+	while (arr[n] != 0)
+	{
+		pthread_mutex_destroy(&arr[n]->fork);
+		free(arr[n]);
+		n++;
+	}
+	free(arr);
+	arr = 0;
+}
 
 static int	ft_atoi(const char *str)
 {
@@ -105,6 +120,5 @@ int	check_arguments(int argc, char* argv[], t_args *data)
 		write(2, "The simulation requires atleast 1 Philosopher\n", 47);
 		return (1);
 	}
-	gettimeofday(&data->start, 0);
 	return (0);
 }
