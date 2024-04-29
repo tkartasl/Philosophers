@@ -6,83 +6,96 @@
 /*   By: tkartasl <tkartasl@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 15:26:33 by tkartasl          #+#    #+#             */
-/*   Updated: 2024/04/25 16:05:56 by tkartasl         ###   ########.fr       */
+/*   Updated: 2024/04/29 15:39:10 by tkartasl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-static long long	get_elapsed_time(struct timeval start)
+static long long	elapsed_time(struct timeval start, t_philo_data *data)
 {
 	long long		elapsed;
 	struct timeval	current;
 
-	memset(&current, 0, sizeof(struct timeval));
+	pthread_mutex_lock(&data->info->get_time);
 	gettimeofday(&current, 0);
+	pthread_mutex_unlock(&data->info->get_time);
 	elapsed = ((current.tv_sec-start.tv_sec)*1000000LL
-			+ current.tv_usec-current.tv_usec) / 1000;
+			+ current.tv_usec-start.tv_usec) / 1000;
 	return (elapsed);
 }
 
-static int	print_action(t_philo_data *data, int nbr, char *msg)
+static int	print_action(t_philo_data *data, int nbr, char *msg, int *died)
 {
-	pthread_mutex_lock(&data->info->write);
-	if (get_elapsed_time(data->prev_meal) >= data->info->time_die)
+	//if (*died != 0)
+	//	return (1);
+	//pthread_mutex_lock(&data->info->write);
+	if (elapsed_time(data->prev_meal, data) >= data->info->time_die)
 	{
-		printf("%lld %d died\n", get_elapsed_time(data->sim_start), nbr);
+		pthread_mutex_lock(&data->info->write);
+		printf("%lld\n", elapsed_time(data->prev_meal, data));
+		*died = 1;
+		printf("%lld %d died\n", elapsed_time(data->start, data), nbr);
+		pthread_mutex_unlock(&data->info->write);
 		return (1);
 	}
-	printf("%lld %d %s\n", get_elapsed_time(data->sim_start), nbr, msg);
+	pthread_mutex_lock(&data->info->write);
+	printf("%lld %d %s\n", elapsed_time(data->start, data), nbr, msg);
 	pthread_mutex_unlock(&data->info->write);
 	return (0);
 }
 
-int	sleeping(t_philo_data *data)
+int	sleeping(t_philo_data *data, int *died)
 {
-	if (get_elapsed_time(data->prev_meal) >= data->info->time_die)
+	/*long long	elapsed;
+	
+	elapsed = elapsed_time(data->prev_meal, data);
+	if (elapsed + data->info->time_sleep >= data->info->time_die)
 	{
-		printf("%lld %d died\n", get_elapsed_time(data->prev_meal), data->nbr);
+		usleep((data->info->time_die - elapsed) * 1000);
+		print_action(data, data->nbr, "died", died);
+			return (1);
+	}*/	
+	if (print_action(data, data->nbr, "is sleeping", died) != 0)
 		return (1);
-	}
-	print_action(data, data->nbr, "is sleeping\n");
 	usleep(data->info->time_sleep * 1000);
 	return (0);
 }
 
-int	eating(t_philo_data *data)
+int	eating(t_philo_data *data, int *died)
 {
-	if (get_elapsed_time(data->prev_meal) >= data->info->time_die)
-	{	 
-		printf("%lld %d died\n", get_elapsed_time(data->prev_meal), data->nbr);
-		return (1);
+	if (data->nbr % 2 == 0)
+	{
+		pthread_mutex_lock(data->left_fork);
+		if (print_action(data, data->nbr, "has taken a fork", died) != 0)
+			return (1);
+		pthread_mutex_lock(data->right_fork);
+		if (print_action(data, data->nbr, "has taken a fork", died) != 0)
+			return (1);
+	}
+	else
+	{
+		pthread_mutex_lock(data->right_fork);
+		if (print_action(data, data->nbr, "has taken a fork", died) != 0)
+			return (1);
+		pthread_mutex_lock(data->left_fork);
+		if (print_action(data, data->nbr, "has taken a fork", died) != 0)
+			return (1);
 	}
 	gettimeofday(&data->prev_meal, 0);
-	pthread_mutex_lock(&data->fork);
-	if (data->nbr == 1 && data->info->philo_count > 1)
-		pthread_mutex_lock(&data[data->info->philo_count].fork);
-	else
-		pthread_mutex_lock(&data[data->nbr - 2].fork);
-	if (print_action(data, data->nbr, "has taken a fork\n") != 0)
-		return (1);
-	if (print_action(data, data->nbr, "is eating\n") != 0)
-		return (1);
+	//pthread_mutex_lock(&data->info->write);
+	printf("%lld %d is eating\n", elapsed_time(data->start, data), data->nbr);
+	//pthread_mutex_unlock(&data->info->write);
 	usleep(data->info->time_eat * 1000);
-	pthread_mutex_unlock(&data->fork);
-	if (data->nbr == 1)
-		pthread_mutex_unlock(&data[data->info->philo_count].fork);
-	else
-		pthread_mutex_unlock(&data[data->nbr - 2].fork);
+	pthread_mutex_unlock(data->left_fork);
+	pthread_mutex_unlock(data->right_fork);
 	data->meals++;
 	return (0);
 }
 
-int	thinking(t_philo_data *data)
+int	thinking(t_philo_data *data, int *died)
 {
-	if (get_elapsed_time(data->prev_meal) >= data->info->time_die)
-	{	 
-		printf("%lld %d died\n", get_elapsed_time(data->prev_meal), data->nbr);
+	if (print_action(data, data->nbr, "is thinking", died) != 0)
 		return (1);
-	}
-	print_action(data, data->nbr, "is thinking\n");
 	return (0);
 }
