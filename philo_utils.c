@@ -6,7 +6,7 @@
 /*   By: tkartasl <tkartasl@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 13:11:20 by tkartasl          #+#    #+#             */
-/*   Updated: 2024/05/07 09:22:07 by tkartasl         ###   ########.fr       */
+/*   Updated: 2024/05/08 12:30:04 by tkartasl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ static int	check_if_digit(char *argv[])
 	{
 		while (argv[i][j] != 0)
 		{
-			if (argv[i][j] < 48 || argv[i][j] > 57)	
+			if (argv[i][j] < 48 || argv[i][j] > 57)
 				return (1);
 			j++;
 		}
@@ -89,8 +89,8 @@ static int	assign_args(t_args *data, char *argv[])
 	data->time_sleep = ft_atoi(argv[4]);
 	if (data->time_sleep < 0)
 		return (1);
-	if (argv[5] != 0)	
-	{	
+	if (argv[5] != 0)
+	{
 		data->times_to_eat = ft_atoi(argv[5]);
 		if (data->times_to_eat < 0)
 			return (1);
@@ -98,11 +98,11 @@ static int	assign_args(t_args *data, char *argv[])
 	return (0);
 }
 
-int	check_arguments(int argc, char* argv[], t_args *data)
+int	check_arguments(int argc, char *argv[], t_args *data)
 {
 	if (argc != 5 && argc != 6)
 	{
-		write(2,"Wrong amount of arguments\n", 26);
+		write(2, "Wrong amount of arguments\n", 26);
 		return (1);
 	}
 	if (check_if_digit(argv) != 0)

@@ -6,7 +6,7 @@
 /*   By: tkartasl <tkartasl@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 12:17:27 by tkartasl          #+#    #+#             */
-/*   Updated: 2024/05/07 15:26:56 by tkartasl         ###   ########.fr       */
+/*   Updated: 2024/05/08 15:51:34 by tkartasl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,28 +23,29 @@ static void	*monitoring(void *arg)
 {
 	t_monitor	*m;
 	int			i;
-	long long	elapsed;
-
-	elapsed = 0;
+	
 	i = 0;
 	m = (t_monitor *)arg;
-	while (m->data[0]->info->sim_start == 0);
+	while (m->data[0]->info->sim_start == 0)
+		continue ;
 	while (1)
 	{
 		if (i == m->data[0]->info->philo_count)
 			i = 0;
-		elapsed = print_time(m->data[i]->prev_meal);
-		if (elapsed >= m->data[i]->info->time_die)
+		if (print_time(m->data[i]->start) - m->data[i]->prev_meal >= m->data[i]->info->time_die)
 		{
-			printf("%lld\n", elapsed);
+			printf("%lld start\n", print_time(m->data[i]->start));
+			printf("%lld prev meal\n", m->data[i]->prev_meal);
+			printf("%lld without meal\n", print_time(m->data[i]->start) - m->data[i]->prev_meal);
 			pthread_mutex_lock(&m->data[0]->info->write);
 			m->data[i]->info->death_count = 1;
 			pthread_mutex_unlock(&m->data[0]->info->write);
-			printf("%lld %d died\n", print_time(m->data[0]->start), m->data[i]->nbr);
+			printf("%lld %d died\n", print_time(m->data[i]->start), m->data[i]->nbr);
 			break ;
 		}
-		if (m->data[i]->meals == m->data[i]->info->times_to_eat)
-			break ;
+		if (m->data[i]->info->times_to_eat > 0)
+			if (m->data[i]->meals == m->data[i]->info->times_to_eat)
+				break ;
 		i++;
 	}
 	return (0);
@@ -55,22 +56,21 @@ static void	*sim(void *arg)
 	t_philo_data	*data;
 
 	data = (t_philo_data *)arg;
-	while (data->info->sim_start == 0);
+	while (data->info->sim_start == 0)
+		continue ;
 	data->start = get_current_time();
 	data->prev_meal = get_current_time();
 	if (data->nbr % 2 == 0)
-		usleep(300);
+		usleep(data->info->time_eat / 2 * 1000);
 	while (data->info->death_count == 0)
 	{
 		eating(data);
-		if (data->meals == data->info->times_to_eat)
-			break ;
+		if (data->info->times_to_eat > 0)
+			if (data->meals == data->info->times_to_eat)
+				break ;
 		print_action(data, 3);
-		//time_to_loop(data, data->info->time_sleep);
-		ft_usleep(data->info->time_sleep);
+		time_to_loop(data->info->time_sleep);
 		print_action(data, 4);
-		//sleeping(data);
-		//thinking(data);
 	}
 	return (0);
 }

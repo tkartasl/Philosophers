@@ -6,13 +6,13 @@
 /*   By: tkartasl <tkartasl@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 10:30:50 by tkartasl          #+#    #+#             */
-/*   Updated: 2024/05/07 15:08:36 by tkartasl         ###   ########.fr       */
+/*   Updated: 2024/05/08 12:16:39 by tkartasl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-static pthread_mutex_t init_mutex(void)
+static pthread_mutex_t	init_mutex(void)
 {
 	pthread_mutex_t	new;
 
@@ -58,10 +58,10 @@ t_philo_data	**init_philo_array(t_args *data)
 	return (philos);
 }
 
-pthread_mutex_t *assign_forks(t_args *data, t_philo_data **philos)
+pthread_mutex_t	*assign_forks(t_args *data, t_philo_data **philos)
 {
 	pthread_mutex_t	*forks;
-	int			i;
+	int				i;
 
 	i = 0;
 	forks = malloc((data->philo_count) * sizeof(pthread_mutex_t));
@@ -73,7 +73,7 @@ pthread_mutex_t *assign_forks(t_args *data, t_philo_data **philos)
 		i++;
 	}
 	i = 0;
-	while(philos[i] != 0)
+	while (philos[i] != 0)
 	{
 		if (i == data->philo_count)
 			break ;
