@@ -6,24 +6,24 @@
 /*   By: tkartasl <tkartasl@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 12:17:27 by tkartasl          #+#    #+#             */
-/*   Updated: 2024/05/08 15:51:34 by tkartasl         ###   ########.fr       */
+/*   Updated: 2024/05/10 17:21:26 by tkartasl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-static void	free_and_exit(t_philo_data **philos, pthread_mutex_t *forks)
+void	free_and_exit(t_philo_data **philos, pthread_mutex_t *forks)
 {
 	pthread_mutex_destroy(&philos[0]->info->write);
-	ft_free_pointer_array(philos);
 	free(forks);
+	ft_free_pointer_array(philos);
 }
 
 static void	*monitoring(void *arg)
 {
 	t_monitor	*m;
 	int			i;
-	
+
 	i = 0;
 	m = (t_monitor *)arg;
 	while (m->data[0]->info->sim_start == 0)
@@ -32,15 +32,13 @@ static void	*monitoring(void *arg)
 	{
 		if (i == m->data[0]->info->philo_count)
 			i = 0;
-		if (print_time(m->data[i]->start) - m->data[i]->prev_meal >= m->data[i]->info->time_die)
+		if (check_if_alive(m->data[i]) == 1)
 		{
-			printf("%lld start\n", print_time(m->data[i]->start));
-			printf("%lld prev meal\n", m->data[i]->prev_meal);
-			printf("%lld without meal\n", print_time(m->data[i]->start) - m->data[i]->prev_meal);
 			pthread_mutex_lock(&m->data[0]->info->write);
 			m->data[i]->info->death_count = 1;
 			pthread_mutex_unlock(&m->data[0]->info->write);
-			printf("%lld %d died\n", print_time(m->data[i]->start), m->data[i]->nbr);
+			printf("%lld %d died\n", print_time(m->data[i]->info->start),
+				m->data[i]->nbr);
 			break ;
 		}
 		if (m->data[i]->info->times_to_eat > 0)
@@ -58,10 +56,12 @@ static void	*sim(void *arg)
 	data = (t_philo_data *)arg;
 	while (data->info->sim_start == 0)
 		continue ;
-	data->start = get_current_time();
-	data->prev_meal = get_current_time();
 	if (data->nbr % 2 == 0)
+	{
 		usleep(data->info->time_eat / 2 * 1000);
+		if (data->nbr >100)
+			usleep(500);
+	}
 	while (data->info->death_count == 0)
 	{
 		eating(data);
@@ -108,22 +108,20 @@ int	main(int argc, char *argv[])
 {
 	t_args			data;
 	t_philo_data	**philos;
-	pthread_mutex_t	*forks;
 	t_monitor		mt;
+	pthread_mutex_t	*forks;
 
 	memset(&data, 0, sizeof(t_args));
-	memset(&mt, 0, sizeof(t_monitor));
 	if (check_arguments(argc, argv, &data) != 0)
 		return (1);
 	philos = init_philo_array(&data);
 	if (philos == 0)
 		return (1);
-	forks = assign_forks(&data, philos);
+	forks = create_forks(&data, philos);
 	if (forks == 0)
-	{
-		ft_free_pointer_array(philos);
 		return (1);
-	}
+	if (init_philo_timers(philos, forks) != 0)
+		return (1);
 	if (create_threads(philos, &data, &mt) == 1)
 	{
 		free_and_exit(philos, forks);

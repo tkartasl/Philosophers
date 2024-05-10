@@ -6,7 +6,7 @@
 /*   By: tkartasl <tkartasl@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 13:11:20 by tkartasl          #+#    #+#             */
-/*   Updated: 2024/05/08 12:30:04 by tkartasl         ###   ########.fr       */
+/*   Updated: 2024/05/10 16:16:52 by tkartasl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,5 +120,7 @@ int	check_arguments(int argc, char *argv[], t_args *data)
 		write(2, "The simulation requires atleast 1 Philosopher\n", 47);
 		return (1);
 	}
+	if (data->times_to_eat == 0 && argv[5] != 0)
+		return (1);
 	return (0);
 }

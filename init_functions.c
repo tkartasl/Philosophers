@@ -6,18 +6,31 @@
 /*   By: tkartasl <tkartasl@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 10:30:50 by tkartasl          #+#    #+#             */
-/*   Updated: 2024/05/08 12:16:39 by tkartasl         ###   ########.fr       */
+/*   Updated: 2024/05/10 17:23:11 by tkartasl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-static pthread_mutex_t	init_mutex(void)
+int	init_philo_timers(t_philo_data **philos, pthread_mutex_t *forks)
 {
-	pthread_mutex_t	new;
+	int	i;
 
-	pthread_mutex_init(&new, NULL);
-	return (new);
+	i = 0;
+	philos[i]->info->start = get_current_time();
+	while (i < philos[0]->info->philo_count)
+	{
+		philos[i]->prev_meal = get_current_time();
+		philos[i]->nbr = i + 1;
+		philos[i]->meals = 0;
+		if (pthread_mutex_init(&philos[i]->lock, NULL) != 0)
+		{
+			free_and_exit(philos, forks);
+			return (1);
+		}
+		i++;
+	}
+	return (0);
 }
 
 static t_philo_data	*init_philo_struct(void)
@@ -28,6 +41,52 @@ static t_philo_data	*init_philo_struct(void)
 	if (new == 0)
 		return (0);
 	return (new);
+}
+
+static void	assign_forks(t_args *d, t_philo_data **philos, pthread_mutex_t *f)
+{
+	int	i;
+
+	i = 0;
+	while (philos[i] != 0)
+	{
+		if (i == d->philo_count)
+			break ;
+		philos[i]->left_fork = &f[i];
+		if (i != 0)
+			philos[i]->right_fork = &f[i - 1];
+		i++;
+	}
+	philos[0]->right_fork = &f[philos[0]->info->philo_count - 1];
+}
+
+ pthread_mutex_t 	*create_forks(t_args *data, t_philo_data **philos)
+{
+	pthread_mutex_t	*forks;
+	int				i;
+
+	i = 0;
+	forks = malloc((data->philo_count) * sizeof(pthread_mutex_t));
+	if (forks == 0)
+		return (0);
+	while (i < data->philo_count)
+	{
+		if (pthread_mutex_init(&forks[i], NULL) != 0)
+		{
+			ft_free_pointer_array(philos);
+			free(forks);
+			return (0);
+		}
+		i++;
+	}
+	assign_forks(data, philos, forks);
+	if (pthread_mutex_init(&philos[0]->info->write, NULL) != 0)
+	{
+		free(forks);
+		ft_free_pointer_array(philos);
+		return (0);
+	}
+	return (forks);
 }
 
 t_philo_data	**init_philo_array(t_args *data)
@@ -50,39 +109,9 @@ t_philo_data	**init_philo_array(t_args *data)
 			ft_free_pointer_array(philos);
 			return (0);
 		}
-		philos[i]->nbr = i + 1;
 		philos[i]->info = data;
 		i++;
 	}
 	philos[i] = 0;
 	return (philos);
-}
-
-pthread_mutex_t	*assign_forks(t_args *data, t_philo_data **philos)
-{
-	pthread_mutex_t	*forks;
-	int				i;
-
-	i = 0;
-	forks = malloc((data->philo_count) * sizeof(pthread_mutex_t));
-	if (forks == 0)
-		return (0);
-	while (i < data->philo_count)
-	{
-		forks[i] = init_mutex();
-		i++;
-	}
-	i = 0;
-	while (philos[i] != 0)
-	{
-		if (i == data->philo_count)
-			break ;
-		philos[i]->left_fork = &forks[i];
-		if (i != 0)
-			philos[i]->right_fork = &forks[i - 1];
-		i++;
-	}
-	pthread_mutex_init(&philos[0]->info->write, NULL);
-	philos[0]->right_fork = &forks[data->philo_count - 1];
-	return (forks);
 }
