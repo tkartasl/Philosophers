@@ -6,7 +6,7 @@
 /*   By: tkartasl <tkartasl@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 12:05:51 by tkartasl          #+#    #+#             */
-/*   Updated: 2024/05/10 17:21:41 by tkartasl         ###   ########.fr       */
+/*   Updated: 2024/05/10 19:51:18 by tkartasl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ typedef struct s_args
 	int				death_count;
 	long long		start;
 	pthread_mutex_t	write;
+	pthread_mutex_t eat;
 }				t_args;
 
 typedef struct s_philos
@@ -62,5 +63,7 @@ int				check_if_alive(t_philo_data *data);
 int				init_philo_timers(t_philo_data **philos, pthread_mutex_t *forks);
 void			free_and_exit(t_philo_data **philos, pthread_mutex_t *forks);
 pthread_mutex_t	*create_forks(t_args *data, t_philo_data **philos);
+void			print_sleep(t_philo_data *data);
+void			print_think(t_philo_data *data);
 
 #endif

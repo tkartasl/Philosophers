@@ -6,7 +6,7 @@
 /*   By: tkartasl <tkartasl@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 15:26:33 by tkartasl          #+#    #+#             */
-/*   Updated: 2024/05/10 17:22:04 by tkartasl         ###   ########.fr       */
+/*   Updated: 2024/05/10 19:58:18 by tkartasl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,10 +18,8 @@ void	print_action(t_philo_data *data, int msg_nbr)
 	char		*str;
 
 	str = 0;
-	if (data->info->death_count != 0)
-		return ;
 	pthread_mutex_lock(&data->info->write);
-	time = print_time(data->info->start);
+	time = get_current_time() - data->info->start;
 	if (msg_nbr == 1)
 		str = "has taken a fork\n";
 	else if (msg_nbr == 2)
@@ -37,22 +35,29 @@ void	print_action(t_philo_data *data, int msg_nbr)
 
 void	eating(t_philo_data *data)
 {
+	long long	time;
+	
 	pthread_mutex_lock(data->left_fork);
 	print_action(data, 1);
 	if (data->info->philo_count == 1)
 	{
+		pthread_mutex_lock(&data->info->write);
 		while (data->info->death_count == 0)
 			usleep(100);
+		pthread_mutex_unlock(&data->info->write);
 		return ;
 	}
 	pthread_mutex_lock(data->right_fork);
 	print_action(data, 1);
 	print_action(data, 2);
 	//pthread_mutex_lock(data->lock);
-	data->prev_meal = print_time(data->info->start);
+	time = get_current_time() - data->info->start;
+	data->prev_meal = time;
 	//pthread_mutex_unlock(data->lock);
 	time_to_loop(data->info->time_eat);
 	pthread_mutex_unlock(data->left_fork);
 	pthread_mutex_unlock(data->right_fork);
+	pthread_mutex_lock(&data->info->eat);
 	data->meals++;
+	pthread_mutex_unlock(&data->info->eat);
 }

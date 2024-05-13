@@ -6,11 +6,32 @@
 /*   By: tkartasl <tkartasl@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 10:30:50 by tkartasl          #+#    #+#             */
-/*   Updated: 2024/05/10 17:23:11 by tkartasl         ###   ########.fr       */
+/*   Updated: 2024/05/10 19:36:10 by tkartasl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+/*int	init_philo_mutexes(t_philo_data **philos, pthread_mutex_t *forks)
+{
+	if (pthread_mutex_init(&philos[0]->info->eat, NULL) != 0)
+	{
+		free_and_exit(philos, forks);
+		return (1);
+	}
+	if (pthread_mutex_init(&philos[0]->info->sleep, NULL) != 0)
+	{
+		free_and_exit(philos, forks);
+		return (1);
+	}
+	if (pthread_mutex_init(&philos[0]->info->think, NULL) != 0)
+	{
+		free_and_exit(philos, forks);
+		return (1);
+	}
+	return (0);
+	
+}*/
 
 int	init_philo_timers(t_philo_data **philos, pthread_mutex_t *forks)
 {

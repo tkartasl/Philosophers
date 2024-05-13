@@ -6,7 +6,7 @@
 #    By: tkartasl <tkartasl@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/04/18 12:11:59 by tkartasl          #+#    #+#              #
-#    Updated: 2024/05/10 16:47:56 by tkartasl         ###   ########.fr        #
+#    Updated: 2024/05/10 20:01:15 by tkartasl         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,9 +22,9 @@ OBJS = $(SRCS:.c=.o)
 
 MAKE = make
 
-FLAGS = -Wall -Wextra -Werror -I includes #-fsanitize=thread -g
+FLAGS = -Wall -Wextra -Werror -I includes -fsanitize=thread -g
 
-CC = cc #-g
+CC = cc -g
 
 all: ${NAME}
 

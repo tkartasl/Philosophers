@@ -6,7 +6,7 @@
 /*   By: tkartasl <tkartasl@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 12:17:27 by tkartasl          #+#    #+#             */
-/*   Updated: 2024/05/10 17:21:26 by tkartasl         ###   ########.fr       */
+/*   Updated: 2024/05/10 19:57:27 by tkartasl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,8 +42,14 @@ static void	*monitoring(void *arg)
 			break ;
 		}
 		if (m->data[i]->info->times_to_eat > 0)
+		{
+			pthread_mutex_lock(&m->data[i]->info->eat);
 			if (m->data[i]->meals == m->data[i]->info->times_to_eat)
+			{	
+				pthread_mutex_unlock(&m->data[i]->info->eat);
 				break ;
+			}
+		}
 		i++;
 	}
 	return (0);
@@ -59,15 +65,21 @@ static void	*sim(void *arg)
 	if (data->nbr % 2 == 0)
 	{
 		usleep(data->info->time_eat / 2 * 1000);
-		if (data->nbr >100)
+		if (data->nbr / 2 % 2 != 0)
 			usleep(500);
 	}
 	while (data->info->death_count == 0)
 	{
 		eating(data);
 		if (data->info->times_to_eat > 0)
+		{
+			pthread_mutex_lock(&data->info->eat);
 			if (data->meals == data->info->times_to_eat)
+			{	
+				pthread_mutex_unlock(&data->info->eat);
 				break ;
+			}
+		}
 		print_action(data, 3);
 		time_to_loop(data->info->time_sleep);
 		print_action(data, 4);
@@ -120,6 +132,8 @@ int	main(int argc, char *argv[])
 	forks = create_forks(&data, philos);
 	if (forks == 0)
 		return (1);
+	//if (init_mutexes(philos, forks) != 0)
+	//	return (1);
 	if (init_philo_timers(philos, forks) != 0)
 		return (1);
 	if (create_threads(philos, &data, &mt) == 1)
