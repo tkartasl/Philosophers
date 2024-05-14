@@ -6,7 +6,7 @@
 /*   By: tkartasl <tkartasl@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 13:11:20 by tkartasl          #+#    #+#             */
-/*   Updated: 2024/05/10 16:16:52 by tkartasl         ###   ########.fr       */
+/*   Updated: 2024/05/13 16:33:49 by tkartasl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@ void	ft_free_pointer_array(t_philo_data **arr)
 	while (arr[n] != 0)
 	{
 		pthread_mutex_destroy(arr[n]->left_fork);
+		pthread_mutex_destroy(&arr[n]->lock);
+		pthread_mutex_destroy(&arr[n]->eat);
 		free(arr[n]);
 		n++;
 	}

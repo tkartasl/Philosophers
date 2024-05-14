@@ -6,7 +6,7 @@
 /*   By: tkartasl <tkartasl@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 15:26:33 by tkartasl          #+#    #+#             */
-/*   Updated: 2024/05/10 19:58:18 by tkartasl         ###   ########.fr       */
+/*   Updated: 2024/05/14 09:25:50 by tkartasl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,13 @@
 
 void	print_action(t_philo_data *data, int msg_nbr)
 {
-	long long	time;
-	char		*str;
+	long	time;
+	char	*str;
+	int		end;
 
 	str = 0;
 	pthread_mutex_lock(&data->info->write);
-	time = get_current_time() - data->info->start;
+	time = get_current_time() - data->start;
 	if (msg_nbr == 1)
 		str = "has taken a fork\n";
 	else if (msg_nbr == 2)
@@ -28,36 +29,42 @@ void	print_action(t_philo_data *data, int msg_nbr)
 		str = "is sleeping\n";
 	else if (msg_nbr == 4)
 		str = "is thinking\n";
-	if (data->info->death_count == 0)
-		printf("%lld %d %s", time, data->nbr, str);
+	end = data->info->alive;
+	if (end == 0)
+		printf("%ld %d %s", time, data->nbr, str);
 	pthread_mutex_unlock(&data->info->write);
+}
+
+void	one_philo_eat(t_philo_data *data)
+{
+	pthread_mutex_lock(data->left_fork);
+	print_action(data, 1);
+	time_to_loop(data->time_die + 5);
+	pthread_mutex_unlock(data->left_fork);
 }
 
 void	eating(t_philo_data *data)
 {
-	long long	time;
-	
-	pthread_mutex_lock(data->left_fork);
-	print_action(data, 1);
-	if (data->info->philo_count == 1)
+	long	time;
+
+	if (data->philo_count == 1)
 	{
-		pthread_mutex_lock(&data->info->write);
-		while (data->info->death_count == 0)
-			usleep(100);
-		pthread_mutex_unlock(&data->info->write);
+		one_philo_eat(data);
 		return ;
 	}
+	pthread_mutex_lock(data->left_fork);
+	print_action(data, 1);
 	pthread_mutex_lock(data->right_fork);
 	print_action(data, 1);
 	print_action(data, 2);
-	//pthread_mutex_lock(data->lock);
-	time = get_current_time() - data->info->start;
+	pthread_mutex_lock(&data->lock);
+	time = get_current_time() - data->start;
 	data->prev_meal = time;
-	//pthread_mutex_unlock(data->lock);
-	time_to_loop(data->info->time_eat);
+	pthread_mutex_unlock(&data->lock);
+	time_to_loop(data->time_eat);
 	pthread_mutex_unlock(data->left_fork);
 	pthread_mutex_unlock(data->right_fork);
-	pthread_mutex_lock(&data->info->eat);
+	pthread_mutex_lock(&data->eat);
 	data->meals++;
-	pthread_mutex_unlock(&data->info->eat);
+	pthread_mutex_unlock(&data->eat);
 }

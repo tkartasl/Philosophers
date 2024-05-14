@@ -6,42 +6,20 @@
 /*   By: tkartasl <tkartasl@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 10:30:50 by tkartasl          #+#    #+#             */
-/*   Updated: 2024/05/10 19:36:10 by tkartasl         ###   ########.fr       */
+/*   Updated: 2024/05/14 09:26:12 by tkartasl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-/*int	init_philo_mutexes(t_philo_data **philos, pthread_mutex_t *forks)
-{
-	if (pthread_mutex_init(&philos[0]->info->eat, NULL) != 0)
-	{
-		free_and_exit(philos, forks);
-		return (1);
-	}
-	if (pthread_mutex_init(&philos[0]->info->sleep, NULL) != 0)
-	{
-		free_and_exit(philos, forks);
-		return (1);
-	}
-	if (pthread_mutex_init(&philos[0]->info->think, NULL) != 0)
-	{
-		free_and_exit(philos, forks);
-		return (1);
-	}
-	return (0);
-	
-}*/
-
-int	init_philo_timers(t_philo_data **philos, pthread_mutex_t *forks)
+int	init_timers(t_philo_data **philos, pthread_mutex_t *forks)
 {
 	int	i;
 
 	i = 0;
-	philos[i]->info->start = get_current_time();
 	while (i < philos[0]->info->philo_count)
 	{
-		philos[i]->prev_meal = get_current_time();
+		philos[i]->start = get_current_time();
 		philos[i]->nbr = i + 1;
 		philos[i]->meals = 0;
 		if (pthread_mutex_init(&philos[i]->lock, NULL) != 0)
@@ -49,18 +27,29 @@ int	init_philo_timers(t_philo_data **philos, pthread_mutex_t *forks)
 			free_and_exit(philos, forks);
 			return (1);
 		}
+		if (pthread_mutex_init(&philos[i]->eat, NULL) != 0)
+		{
+			free_and_exit(philos, forks);
+			return (1);
+		}
+		philos[i]->prev_meal = get_current_time();
 		i++;
 	}
 	return (0);
 }
 
-static t_philo_data	*init_philo_struct(void)
+static t_philo_data	*init_philo_struct(t_args *data)
 {
 	t_philo_data	*new;
 
 	new = malloc(sizeof(t_philo_data));
 	if (new == 0)
 		return (0);
+	new->philo_count = data->philo_count;
+	new->time_die = data->time_die;
+	new->time_eat = data->time_eat;
+	new->time_sleep = data->time_sleep;
+	new->times_to_eat = data->times_to_eat;
 	return (new);
 }
 
@@ -81,7 +70,7 @@ static void	assign_forks(t_args *d, t_philo_data **philos, pthread_mutex_t *f)
 	philos[0]->right_fork = &f[philos[0]->info->philo_count - 1];
 }
 
- pthread_mutex_t 	*create_forks(t_args *data, t_philo_data **philos)
+pthread_mutex_t	*create_forks(t_args *data, t_philo_data **philos)
 {
 	pthread_mutex_t	*forks;
 	int				i;
@@ -124,7 +113,7 @@ t_philo_data	**init_philo_array(t_args *data)
 	}
 	while (i < data->philo_count)
 	{
-		philos[i] = init_philo_struct();
+		philos[i] = init_philo_struct(data);
 		if (philos[i] == 0)
 		{
 			ft_free_pointer_array(philos);
