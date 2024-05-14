@@ -6,27 +6,20 @@
 /*   By: tkartasl <tkartasl@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 13:11:20 by tkartasl          #+#    #+#             */
-/*   Updated: 2024/05/13 16:33:49 by tkartasl         ###   ########.fr       */
+/*   Updated: 2024/05/14 14:17:48 by tkartasl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	ft_free_pointer_array(t_philo_data **arr)
+static int	ft_strlen(char *str)
 {
-	int	n;
+	int	len;
 
-	n = 0;
-	while (arr[n] != 0)
-	{
-		pthread_mutex_destroy(arr[n]->left_fork);
-		pthread_mutex_destroy(&arr[n]->lock);
-		pthread_mutex_destroy(&arr[n]->eat);
-		free(arr[n]);
-		n++;
-	}
-	free(arr);
-	arr = 0;
+	len = 0;
+	while (str[len] != 0)
+		len++;
+	return (len);
 }
 
 static int	ft_atoi(const char *str)
@@ -80,21 +73,21 @@ static int	check_if_digit(char *argv[])
 static int	assign_args(t_args *data, char *argv[])
 {
 	data->philo_count = ft_atoi(argv[1]);
-	if (data->philo_count < 0)
+	if (data->philo_count < 0 || ft_strlen(argv[1]) > 10)
 		return (1);
 	data->time_die = ft_atoi(argv[2]);
-	if (data->time_die < 0)
+	if (data->time_die < 0 || ft_strlen(argv[2]) > 10)
 		return (1);
 	data->time_eat = ft_atoi(argv[3]);
-	if (data->time_eat < 0)
+	if (data->time_eat < 0 || ft_strlen(argv[3]) > 10)
 		return (1);
 	data->time_sleep = ft_atoi(argv[4]);
-	if (data->time_sleep < 0)
+	if (data->time_sleep < 0 || ft_strlen(argv[4]) > 10)
 		return (1);
 	if (argv[5] != 0)
 	{
 		data->times_to_eat = ft_atoi(argv[5]);
-		if (data->times_to_eat < 0)
+		if (data->times_to_eat < 0 || ft_strlen(argv[5]) > 10)
 			return (1);
 	}
 	return (0);

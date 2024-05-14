@@ -6,7 +6,7 @@
 /*   By: tkartasl <tkartasl@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 12:05:51 by tkartasl          #+#    #+#             */
-/*   Updated: 2024/05/14 09:25:10 by tkartasl         ###   ########.fr       */
+/*   Updated: 2024/05/14 12:58:26 by tkartasl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ void			ft_free_pointer_array(t_philo_data **arr);
 long			print_time(long start);
 t_philo_data	**init_philo_array(t_args *data);
 void			print_action(t_philo_data *data, int msg_nbr);
-void			time_to_loop(long time_to);
+void			time_to_loop(long time_to, t_philo_data *data);
 long			get_current_time(void);
 int				check_if_alive(t_philo_data *data);
 int				init_timers(t_philo_data **philos, pthread_mutex_t *forks);

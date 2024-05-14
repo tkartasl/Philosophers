@@ -6,7 +6,7 @@
 #    By: tkartasl <tkartasl@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/04/18 12:11:59 by tkartasl          #+#    #+#              #
-#    Updated: 2024/05/14 09:26:36 by tkartasl         ###   ########.fr        #
+#    Updated: 2024/05/14 14:11:53 by tkartasl         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -23,7 +23,7 @@ OBJS = $(SRCS:.c=.o)
 
 MAKE = make
 
-FLAGS = -Wall -Wextra -Werror -I includes
+FLAGS = -Wall -Wextra -Werror
 
 CC = cc
 
@@ -31,6 +31,9 @@ all: ${NAME}
 
 ${NAME}: ${OBJS}
 	${CC} ${FLAGS} ${OBJS} -o ${NAME}
+
+${OBJS}: ${SRCS}
+	${CC} ${FLAGS} -c ${SRCS}
 
 clean:
 	rm -f ${OBJS}

@@ -6,7 +6,7 @@
 /*   By: tkartasl <tkartasl@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 09:48:25 by tkartasl          #+#    #+#             */
-/*   Updated: 2024/05/14 09:20:21 by tkartasl         ###   ########.fr       */
+/*   Updated: 2024/05/14 14:07:14 by tkartasl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,11 +21,17 @@ long	get_current_time(void)
 	return (time.tv_sec * 1000 + time.tv_usec / 1000);
 }
 
-void	time_to_loop(long time_to)
+void	time_to_loop(long time_to, t_philo_data *data)
 {
 	long	start;
 
 	start = get_current_time();
+	if (time_to > data->time_die)
+	{
+		pthread_mutex_lock(&data->lock);
+		time_to = data->time_die;
+		pthread_mutex_unlock(&data->lock);
+	}
 	while ((get_current_time() - start) < time_to)
 		usleep(200);
 }

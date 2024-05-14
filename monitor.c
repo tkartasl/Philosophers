@@ -6,7 +6,7 @@
 /*   By: tkartasl <tkartasl@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/13 10:08:45 by tkartasl          #+#    #+#             */
-/*   Updated: 2024/05/14 09:21:02 by tkartasl         ###   ########.fr       */
+/*   Updated: 2024/05/14 14:16:52 by tkartasl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,6 @@ void	*monitoring(void *arg)
 
 	i = 0;
 	m = (t_monitor *)arg;
-	time_to_loop(m->data[i]->info->time_eat / 2);
 	while (1)
 	{
 		if (i == m->data[0]->info->philo_count)

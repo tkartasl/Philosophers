@@ -6,11 +6,28 @@
 /*   By: tkartasl <tkartasl@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 12:17:27 by tkartasl          #+#    #+#             */
-/*   Updated: 2024/05/14 09:25:23 by tkartasl         ###   ########.fr       */
+/*   Updated: 2024/05/14 13:33:57 by tkartasl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+void	ft_free_pointer_array(t_philo_data **arr)
+{
+	int	n;
+
+	n = 0;
+	while (arr[n] != 0)
+	{
+		pthread_mutex_destroy(arr[n]->left_fork);
+		pthread_mutex_destroy(&arr[n]->lock);
+		pthread_mutex_destroy(&arr[n]->eat);
+		free(arr[n]);
+		n++;
+	}
+	free(arr);
+	arr = 0;
+}
 
 void	free_and_exit(t_philo_data **philos, pthread_mutex_t *forks)
 {
@@ -22,11 +39,10 @@ void	free_and_exit(t_philo_data **philos, pthread_mutex_t *forks)
 static void	*sim(void *arg)
 {
 	t_philo_data	*data;
-	int				philos;
 
 	data = (t_philo_data *)arg;
 	if (data->nbr % 2 == 0)
-		time_to_loop(data->time_eat / 2);
+		time_to_loop(data->time_eat / 2, data);
 	while (check_exit_status(data) == 0)
 	{
 		eating(data);
@@ -34,7 +50,7 @@ static void	*sim(void *arg)
 			if (check_meal_count(data) == 1)
 				break ;
 		print_action(data, 3);
-		time_to_loop(data->time_sleep);
+		time_to_loop(data->time_sleep, data);
 		print_action(data, 4);
 	}
 	return (0);
