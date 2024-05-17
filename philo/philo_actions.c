@@ -6,7 +6,7 @@
 /*   By: tkartasl <tkartasl@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 15:26:33 by tkartasl          #+#    #+#             */
-/*   Updated: 2024/05/17 10:33:55 by tkartasl         ###   ########.fr       */
+/*   Updated: 2024/05/17 11:26:38 by tkartasl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,8 +44,13 @@ void	one_philo_eat(t_philo_data *data)
 	pthread_mutex_unlock(data->left_fork);
 }
 
-static int	pick_forks(t_philo_data *data)
+int	pick_forks(t_philo_data *data)
 {
+	if (data->philo_count == 1)
+	{
+		one_philo_eat(data);
+		return (1);
+	}
 	pthread_mutex_lock(data->left_fork);
 	if (check_exit_status(data) == 1)
 	{
@@ -68,18 +73,6 @@ void	eating(t_philo_data *data)
 {
 	long	time;
 
-	if (data->philo_count == 1)
-	{
-		one_philo_eat(data);
-		return ;
-	}
-	/*pthread_mutex_lock(data->right_fork);
-	print_action(data, 1);
-	pthread_mutex_lock(data->left_fork);
-	print_action(data, 1);
-	*/
-	if (pick_forks(data) != 0)
-		return ;
 	print_action(data, 2);
 	pthread_mutex_lock(&data->lock);
 	time = get_current_time() - data->start;

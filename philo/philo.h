@@ -6,7 +6,7 @@
 /*   By: tkartasl <tkartasl@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 12:05:51 by tkartasl          #+#    #+#             */
-/*   Updated: 2024/05/14 12:58:26 by tkartasl         ###   ########.fr       */
+/*   Updated: 2024/05/17 10:58:55 by tkartasl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,5 +71,6 @@ void			*monitoring(void *arg);
 int				check_meal_count(t_philo_data *data);
 int				check_exit_status(t_philo_data *data);
 void			one_philo_eat(t_philo_data *data);
+int				pick_forks(t_philo_data *data);
 
 #endif

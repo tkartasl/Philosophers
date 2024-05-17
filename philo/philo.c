@@ -6,7 +6,7 @@
 /*   By: tkartasl <tkartasl@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 12:17:27 by tkartasl          #+#    #+#             */
-/*   Updated: 2024/05/14 13:33:57 by tkartasl         ###   ########.fr       */
+/*   Updated: 2024/05/17 11:23:16 by tkartasl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,8 @@ static void	*sim(void *arg)
 		time_to_loop(data->time_eat / 2, data);
 	while (check_exit_status(data) == 0)
 	{
+		if (pick_forks(data) != 0)
+			break ;
 		eating(data);
 		if (data->times_to_eat > 0)
 			if (check_meal_count(data) == 1)
