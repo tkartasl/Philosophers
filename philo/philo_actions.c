@@ -6,7 +6,7 @@
 /*   By: tkartasl <tkartasl@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 15:26:33 by tkartasl          #+#    #+#             */
-/*   Updated: 2024/05/14 13:26:34 by tkartasl         ###   ########.fr       */
+/*   Updated: 2024/05/17 10:33:55 by tkartasl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,26 @@ void	one_philo_eat(t_philo_data *data)
 	pthread_mutex_unlock(data->left_fork);
 }
 
+static int	pick_forks(t_philo_data *data)
+{
+	pthread_mutex_lock(data->left_fork);
+	if (check_exit_status(data) == 1)
+	{
+		pthread_mutex_unlock(data->left_fork);
+		return (1);
+	}
+	print_action(data, 1);
+	pthread_mutex_lock(data->right_fork);
+	if (check_exit_status(data) == 1)
+	{
+		pthread_mutex_unlock(data->left_fork);
+		pthread_mutex_unlock(data->right_fork);
+		return (1);
+	}
+	print_action(data, 1);
+	return (0);
+}
+
 void	eating(t_philo_data *data)
 {
 	long	time;
@@ -53,18 +73,21 @@ void	eating(t_philo_data *data)
 		one_philo_eat(data);
 		return ;
 	}
+	/*pthread_mutex_lock(data->right_fork);
+	print_action(data, 1);
 	pthread_mutex_lock(data->left_fork);
 	print_action(data, 1);
-	pthread_mutex_lock(data->right_fork);
-	print_action(data, 1);
+	*/
+	if (pick_forks(data) != 0)
+		return ;
 	print_action(data, 2);
 	pthread_mutex_lock(&data->lock);
 	time = get_current_time() - data->start;
 	data->prev_meal = time;
 	pthread_mutex_unlock(&data->lock);
 	time_to_loop(data->time_eat, data);
-	pthread_mutex_unlock(data->left_fork);
 	pthread_mutex_unlock(data->right_fork);
+	pthread_mutex_unlock(data->left_fork);
 	pthread_mutex_lock(&data->eat);
 	data->meals++;
 	pthread_mutex_unlock(&data->eat);

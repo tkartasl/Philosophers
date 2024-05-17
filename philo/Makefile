@@ -23,7 +23,7 @@ OBJS = $(SRCS:.c=.o)
 
 MAKE = make
 
-FLAGS = -Wall -Wextra -Werror
+FLAGS = -Wall -Wextra -Werror -g
 
 CC = cc
 
