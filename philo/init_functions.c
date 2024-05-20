@@ -6,7 +6,7 @@
 /*   By: tkartasl <tkartasl@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 10:30:50 by tkartasl          #+#    #+#             */
-/*   Updated: 2024/05/14 09:26:12 by tkartasl         ###   ########.fr       */
+/*   Updated: 2024/05/20 09:20:19 by tkartasl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,7 +105,7 @@ t_philo_data	**init_philo_array(t_args *data)
 	int				i;
 
 	i = 0;
-	philos = malloc((data->philo_count + 1) * sizeof(t_philo_data *));
+	philos = malloc((data->philo_count) * sizeof(t_philo_data *));
 	if (philos == 0)
 	{
 		write(2, "Malloc failure\n", 15);
@@ -122,6 +122,5 @@ t_philo_data	**init_philo_array(t_args *data)
 		philos[i]->info = data;
 		i++;
 	}
-	philos[i] = 0;
 	return (philos);
 }

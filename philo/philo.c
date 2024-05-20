@@ -6,7 +6,7 @@
 /*   By: tkartasl <tkartasl@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 12:17:27 by tkartasl          #+#    #+#             */
-/*   Updated: 2024/05/17 11:23:16 by tkartasl         ###   ########.fr       */
+/*   Updated: 2024/05/20 09:41:46 by tkartasl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,9 +15,13 @@
 void	ft_free_pointer_array(t_philo_data **arr)
 {
 	int	n;
+	int	philo_count;
 
+	while (arr[0]->info->alive == 0)
+		continue ;
+	philo_count = arr[0]->info->philo_count;
 	n = 0;
-	while (arr[n] != 0)
+	while (n < philo_count)
 	{
 		pthread_mutex_destroy(arr[n]->left_fork);
 		pthread_mutex_destroy(&arr[n]->lock);
@@ -31,6 +35,8 @@ void	ft_free_pointer_array(t_philo_data **arr)
 
 void	free_and_exit(t_philo_data **philos, pthread_mutex_t *forks)
 {
+	while (philos[0]->info->alive == 0)
+		continue ;
 	pthread_mutex_destroy(&philos[0]->info->write);
 	free(forks);
 	ft_free_pointer_array(philos);
@@ -45,13 +51,20 @@ static void	*sim(void *arg)
 		time_to_loop(data->time_eat / 2, data);
 	while (check_exit_status(data) == 0)
 	{
-		if (pick_forks(data) != 0)
-			break ;
+		if (data->nbr == data->info->philo_count)
+		{
+			if (pick_forks_last(data) != 0)
+				break ;
+		}
+		else
+		{
+			if (pick_forks(data) != 0)
+				break ;
+		}
 		eating(data);
 		if (data->times_to_eat > 0)
 			if (check_meal_count(data) == 1)
 				break ;
-		print_action(data, 3);
 		time_to_loop(data->time_sleep, data);
 		print_action(data, 4);
 	}
