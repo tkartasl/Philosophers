@@ -6,7 +6,7 @@
 /*   By: tkartasl <tkartasl@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 15:26:33 by tkartasl          #+#    #+#             */
-/*   Updated: 2024/05/20 09:41:53 by tkartasl         ###   ########.fr       */
+/*   Updated: 2024/06/25 14:54:39 by tkartasl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,18 +104,9 @@ void	eating(t_philo_data *data)
 	data->prev_meal = time;
 	pthread_mutex_unlock(&data->lock);
 	time_to_loop(data->time_eat, data);
-	if (data->nbr == data->info->philo_count)
-	{
-		pthread_mutex_unlock(data->right_fork);
-		pthread_mutex_unlock(data->left_fork);
-	}
-	else
-	{
-		pthread_mutex_unlock(data->left_fork);
-		pthread_mutex_unlock(data->right_fork);
-	}
+	pthread_mutex_unlock(data->right_fork);
+	pthread_mutex_unlock(data->left_fork);
 	pthread_mutex_lock(&data->eat);
 	data->meals++;
 	pthread_mutex_unlock(&data->eat);
-	print_action(data, 3);
 }

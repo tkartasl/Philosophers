@@ -6,7 +6,7 @@
 /*   By: tkartasl <tkartasl@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 12:17:27 by tkartasl          #+#    #+#             */
-/*   Updated: 2024/05/20 09:41:46 by tkartasl         ###   ########.fr       */
+/*   Updated: 2024/06/25 14:51:31 by tkartasl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,12 @@ void	ft_free_pointer_array(t_philo_data **arr)
 {
 	int	n;
 	int	philo_count;
-
+	
+	n = 0;
+	while (arr[n] != 0 && check_meal_count(arr[n]) == 1)
+		n++;
+	if (n == arr[0]->philo_count)
+		arr[0]->info->alive = 1;
 	while (arr[0]->info->alive == 0)
 		continue ;
 	philo_count = arr[0]->info->philo_count;
@@ -35,6 +40,13 @@ void	ft_free_pointer_array(t_philo_data **arr)
 
 void	free_and_exit(t_philo_data **philos, pthread_mutex_t *forks)
 {
+	int	n;
+
+	n = 0;
+	while (philos[n] != 0 && check_meal_count(philos[n]) == 1)
+		n++;
+	if (n == philos[0]->philo_count)
+		philos[0]->info->alive = 1;
 	while (philos[0]->info->alive == 0)
 		continue ;
 	pthread_mutex_destroy(&philos[0]->info->write);
